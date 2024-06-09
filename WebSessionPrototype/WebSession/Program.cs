@@ -3,12 +3,20 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddDistributedMemoryCache();
+//builder.Services.AddDistributedMemoryCache();
+
+builder.Services.AddDistributedSqlServerCache(options =>
+{
+    options.ConnectionString = builder.Configuration.GetConnectionString(
+        "CacheDatabase");
+    options.SchemaName = "dbo";
+    options.TableName = "ILDBCache";
+});
 
 // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/app-state?view=aspnetcore-8.0
 
 builder.Services.AddSession(options =>
-{
+{    
     options.IdleTimeout = TimeSpan.FromSeconds(180);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
